@@ -1,5 +1,15 @@
 # React Developer Coding Challenge
 
+## Additional Install Requirements
+
+This solution included the use of three packages from NPM. 
+
+- Bootstrap
+- reactstrap
+- Axios
+  
+To install and confirm the project runs as expected be sure to run `npm install` before running `npm build`
+
 This is a coding challenge for prospective front-end and full-stack developer applicants applying to DemandHub. If you're unfamiliar with React, Facebook has put together a helpful tutorial that provides a quick introduction to the basics: https://reactjs.org/docs/hello-world.html
 
 ## Goal:
