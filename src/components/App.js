@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useRef, useCallback } from 'react';
 import { Container, Row, Col } from "reactstrap"
 import axios from "axios"
 import unsplashToken from "../utilities/unsplashToken"
@@ -17,10 +17,20 @@ function App() {
 	}
 	const [imageData, imageDispatch] = useReducer(imageReducer, { images: [], fetching: true, })
 
+	const pageReducer = (state, action) => {
+		switch (action.type) {
+			case 'UPDATE_PAGE':
+				return { ...state, page: state.page + 1 }
+			default:
+				return state;
+		}
+	}
+	const [pagination, paginationDispatch] = useReducer(pageReducer, { page: 0 })
+
 	useEffect(() => {
 		imageDispatch({ type: 'FETCHING_IMAGES', fetching: true })
 
-		axios.get(`https://api.unsplash.com/photos?page=1&client_id=${unsplashToken.accessKey}`)
+		axios.get(`https://api.unsplash.com/photos?page=${pagination.page}&client_id=${unsplashToken.accessKey}`)
 			.then(function (response) {
 				// handle success
 				imageDispatch({ type: 'PUSHING_IMAGES', images: response.data })
@@ -31,7 +41,30 @@ function App() {
 				imageDispatch({ type: 'FETCHING_IMAGES', fetching: false })
 				return e
 			})
-	}, []);
+	}, [imageDispatch, pagination.page]);
+	// including all items in scope instead of an empty array
+
+	let bottomBoundaryRef = useRef(null);
+
+	//using intersection observer to tell if we are at the bottom of the page
+	const scrollObserver = useCallback(
+		node => {
+			new IntersectionObserver(entries => {
+				entries.forEach(en => {
+					if (en.intersectionRatio > 0) {
+						paginationDispatch({ type: 'UPDATE_PAGE' });
+					}
+				});
+			}).observe(node);
+		},
+		[paginationDispatch]
+	);
+
+	useEffect(() => {
+		if (bottomBoundaryRef.current) {
+			scrollObserver(bottomBoundaryRef.current);
+		}
+	}, [scrollObserver, bottomBoundaryRef]);
 
 	return (
 		<Container className="App">
@@ -41,6 +74,7 @@ function App() {
 						return (
 							<Col xs="6" sm="4" md="3" lg="2" key={index}>
 								<img
+									alt={image.alt_description}
 									className="img-fluid"
 									src={image.urls.regular ? image.urls.regular : 'placeholder.png'}
 								/>
