@@ -1,22 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { Container, Row, Col } from "reactstrap"
 import axios from "axios"
 import unsplashToken from "../utilities/unsplashToken"
 
 function App() {
 
-	const [unsplashData, setUnsplashData] = useState([])
+	const imageReducer = (state, action) => {
+		switch (action.type) {
+			case 'PUSHING_IMAGES':
+				return { ...state, images: state.images.concat(action.images) }
+			case 'FETCHING_IMAGES':
+				return { ...state, fetching: action.fetching }
+			default:
+				return state;
+		}
+	}
+	const [imageData, imageDispatch] = useReducer(imageReducer, { images: [], fetching: true, })
+
+
+	// const [unsplashData, setUnsplashData] = useState([])
 
 	useEffect(() => {
+		imageDispatch({ type: 'FETCHING_IMAGES', fetching: true })
+
 		axios.get(`https://api.unsplash.com/photos?page=1&client_id=${unsplashToken.accessKey}`)
 			.then(function (response) {
 				// handle success
 				console.log(response);
-				setUnsplashData(response.data)
+				// setUnsplashData(response.data)
+
+				imageDispatch({ type: 'PUSHING_IMAGES', images: response.data })
+				imageDispatch({ type: 'FETCHING_IMAGES', fetching: false })
 			})
-			.catch(function (error) {
+			.catch(e => {
 				// handle error
-				console.log(error);
+				imageDispatch({ type: 'FETCHING_IMAGES', fetching: false })
+				return e
 			})
 	}, []);
 
@@ -24,7 +43,7 @@ function App() {
 		<Container className="App">
 			<Row>
 				{
-					unsplashData ? unsplashData.map((image, index) => {
+					imageData.images ? imageData.images.map((image, index) => {
 						return (
 							<Col xs="6" sm="4" md="3" lg="2" key={index}>
 								<img
