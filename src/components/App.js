@@ -102,38 +102,36 @@ function App() {
 	const [isOpen, setIsOpen] = useState(false);
 	const toggle = () => setIsOpen(!isOpen);
 
-
-	const [clickedImageIndex, setClickedImageIndex] = useState(0);
-
 	const lightboxToggle = (index) => {
-		console.log(index)
-		setClickedImageIndex(index)
-		// currentIndexDispatch({ type: 'SET_NEW_INDEX' })
+		currentIndexDispatch({ type: 'RESET', payload: index })
 		toggle()
 	}
 
-	// const initialIndex = { index: 0 }
-
-	// const indexReducer = (state, action) => {
-	// 	switch (action.type) {
-	// 		case 'INCREMENT':
-	// 			return { index: state.count + 1 % imageData.images.length };
-	// 		case 'DECREMENT':
-	// 			return { index: state.count - 1 % imageData.images.length };
-	// 		case 'SET_NEW_INDEX':
-	// 			return { index: clickedImageIndex };
-	// 		default:
-	// 			throw new Error();
-	// 	}
-	// }
-	// const [currentIndex, currentIndexDispatch] = useReducer(indexReducer, initialIndex);
+	function indexReducerInitializer(initialIndex) {
+		return { index: initialIndex };
+	}
+	//helper method for negative modulo
+	const mod = (n, m) => {
+		return ((n % m) + m) % m;
+	}
+	const indexReducer = (state, action) => {
+		switch (action.type) {
+			case 'INCREMENT':
+				return { index: mod(state.index + 1, imageData.images.length) };
+			case 'DECREMENT':
+				return { index: mod(state.index - 1, imageData.images.length) };
+			case 'RESET':
+				return indexReducerInitializer(action.payload);
+			default:
+				throw new Error();
+		}
+	}
+	const [currentIndex, currentIndexDispatch] = useReducer(indexReducer, -1, indexReducerInitializer);
 
 	return (
 		<Container className="App">
-			<ImageProvider value={{ imageData, clickedImageIndex, isOpen }}>
-				<Lightbox
-					toggle={toggle}
-				/>
+			<ImageProvider value={{ imageData, currentIndex, currentIndexDispatch, isOpen, toggle }}>
+				<Lightbox />
 				<Row>
 					{
 						imageData.images.map((image, index) => {
