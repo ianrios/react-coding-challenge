@@ -1,0 +1,10 @@
+.right-image-flip {
+	right: 0;	
+}
+
+.left-image-flip, .right-image-flip {
+	position: absolute;
+	top: 50%;
+	z-index: 100;
+	opacity: 0.4;
+}

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useReducer, useRef, useCallback, } from 'react';
-import { Container, Row, Col } from "reactstrap"
+import { Container, Row, Col, } from "reactstrap"
 import axios from "axios"
 import unsplashToken from "../utilities/unsplashToken"
+import Lightbox from './Lightbox';
+import { ImageProvider } from "../utilities/imageContext"
 
 function App() {
 
@@ -68,7 +70,7 @@ function App() {
 
 
 	const imagesRef = useRef(null);
-
+	// lazy loading - show placeholder while image is still loading. 
 	const imageObserver = useCallback(node => {
 		const intersectionObserver = new IntersectionObserver(entries => {
 			entries.forEach(en => {
@@ -97,30 +99,65 @@ function App() {
 		}
 	}, [imageObserver, imagesRef, imageData.images]);
 
+	const [isOpen, setIsOpen] = useState(false);
+	const toggle = () => setIsOpen(!isOpen);
+
+
+	const [clickedImageIndex, setClickedImageIndex] = useState(0);
+
+	const lightboxToggle = (index) => {
+		console.log(index)
+		setClickedImageIndex(index)
+		// currentIndexDispatch({ type: 'SET_NEW_INDEX' })
+		toggle()
+	}
+
+	// const initialIndex = { index: 0 }
+
+	// const indexReducer = (state, action) => {
+	// 	switch (action.type) {
+	// 		case 'INCREMENT':
+	// 			return { index: state.count + 1 % imageData.images.length };
+	// 		case 'DECREMENT':
+	// 			return { index: state.count - 1 % imageData.images.length };
+	// 		case 'SET_NEW_INDEX':
+	// 			return { index: clickedImageIndex };
+	// 		default:
+	// 			throw new Error();
+	// 	}
+	// }
+	// const [currentIndex, currentIndexDispatch] = useReducer(indexReducer, initialIndex);
+
 	return (
 		<Container className="App">
-			<Row>
-				{
-					imageData.images.map((image, index) => {
-						return (
-							<Col xs="6" sm="4" md="3" lg="2" key={index}>
-								<img
-									className="img-fluid"
-									alt={image.alt_description}
-									data-src={image.urls.regular}
-									src={'placeholder.png'}
-								/>
-							</Col>
-						)
-					})
-				}
-			</Row>
-			{imageData.fetching && (
-				<div className="text-center bg-secondary m-auto p-3">
-					<p className="m-0 text-white">Loading More Images</p>
-				</div>
-			)}
-			<div ref={bottomBoundaryRef}></div>
+			<ImageProvider value={{ imageData, clickedImageIndex, isOpen }}>
+				<Lightbox
+					toggle={toggle}
+				/>
+				<Row>
+					{
+						imageData.images.map((image, index) => {
+							return (
+								<Col xs="6" sm="4" md="3" lg="2" key={index} className="mb-2">
+									<img
+										className="img-fluid"
+										alt={image.alt_description}
+										data-src={image.urls.regular}
+										src={'placeholder.png'}
+										onClick={() => lightboxToggle(index)}
+									/>
+								</Col>
+							)
+						})
+					}
+				</Row>
+				{imageData.fetching ? (
+					<div className="text-center bg-secondary m-auto p-3">
+						<p className="m-0 text-white">Loading More Images</p>
+					</div>
+				) : null}
+				<div ref={bottomBoundaryRef}></div>
+			</ImageProvider>
 		</Container>
 	);
 }
