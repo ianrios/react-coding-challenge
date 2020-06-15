@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Container, Row, Col } from "reactstrap"
 import axios from "axios"
 import unsplashToken from "../utilities/unsplashToken"
@@ -17,18 +17,12 @@ function App() {
 	}
 	const [imageData, imageDispatch] = useReducer(imageReducer, { images: [], fetching: true, })
 
-
-	// const [unsplashData, setUnsplashData] = useState([])
-
 	useEffect(() => {
 		imageDispatch({ type: 'FETCHING_IMAGES', fetching: true })
 
 		axios.get(`https://api.unsplash.com/photos?page=1&client_id=${unsplashToken.accessKey}`)
 			.then(function (response) {
 				// handle success
-				console.log(response);
-				// setUnsplashData(response.data)
-
 				imageDispatch({ type: 'PUSHING_IMAGES', images: response.data })
 				imageDispatch({ type: 'FETCHING_IMAGES', fetching: false })
 			})
@@ -55,6 +49,11 @@ function App() {
 					}) : null
 				}
 			</Row>
+			{imageData.fetching && (
+				<div className="text-center bg-secondary m-auto p-3">
+					<p className="m-0 text-white">Loading More Images</p>
+				</div>
+			)}
 			<div id='bottom-for-scrollchecking'></div>
 		</Container>
 	);
