@@ -9,8 +9,8 @@ function App() {
 	const [unsplashData, setUnsplashData] = useState({})
 
 	useEffect(() => {
-		const data = { headers: { Authorization: `Client-ID ${unsplashToken.accessKey}` } }
-		axios.get('https://api.unsplash.com/photos/curated', data)
+		// const data = { headers: { Authorization: `Client-ID ${unsplashToken.accessKey}` } }
+		axios.get(`https://api.unsplash.com/photos?page=1&client_id=${unsplashToken.accessKey}`)
 			.then(function (response) {
 				// handle success
 				console.log(response);
@@ -26,7 +26,10 @@ function App() {
 		<Container className="App">
 			<Row>
 				<Col xs="12" sm="4" md="3" lg="2">
-					react challenge app
+					<img
+						className="img-fluid"
+						src={'placeholder.png'}
+					/>
 				</Col>
 			</Row>
 		</Container>
