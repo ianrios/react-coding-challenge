@@ -30,15 +30,13 @@ function Lightbox() {
 						onClickHandler={() => appContext.currentIndexDispatch({ type: 'INCREMENT' })}
 					/>
 				</ModalBody>
-				<ModalBody>
-					{/* additional details as per the instruction docs */}
-					<p>
-						{specificImage ? specificImage.alt_description : null}
-					</p>
-					<p>
-						Photo Taken by: {specificImage ? specificImage.user.first_name : "loading"}
-					</p>
-				</ModalBody>
+				{specificImage ? (
+					<ModalBody>
+						{/* additional details as per the instruction docs */}
+						<p>{specificImage.alt_description}</p>
+						<p>Photo Taken by: {specificImage.user.first_name}</p>
+					</ModalBody>
+				) : "Loading"}
 				<ModalFooter>
 					<Button color="secondary" onClick={appContext.toggle}>Close</Button>
 				</ModalFooter>
