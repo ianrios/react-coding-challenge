@@ -33,5 +33,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "guppy": {
+    "id": "9c349160-b0c8-11ea-9355-b5c87107f10f",
+    "name": "coding-challenge",
+    "type": "create-react-app",
+    "color": "#cc004a",
+    "icon": null,
+    "createdAt": 1592418624887
   }
 }

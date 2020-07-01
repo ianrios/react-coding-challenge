@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useRef, useCallback, } from 'react';
+import React, { useState, useEffect, useReducer, useRef, useCallback } from 'react';
 import { Container, Row, Col, } from "reactstrap"
 import axios from "axios"
 import Lightbox from './Lightbox';
